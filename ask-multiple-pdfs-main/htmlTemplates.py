@@ -5,6 +5,8 @@ css = '''
 :root {
   --signal: #3DF5A8;
   --signal-dim: rgba(61, 245, 168, 0.55);
+  --sky: #38BDF8;
+  --teal: #2DD4BF;
   --amber: #F5B83D;
   --panel: #14181D;
   --line: rgba(216, 221, 227, 0.12);
@@ -14,7 +16,15 @@ css = '''
   /* glassmorphism layer: frosted surfaces over the dark ink.
      Fills are deliberately translucent (8–25%): the blur only reads as
      glass when colour shows through it. The two near-opaque dark fills
-     (55%) from the first glass pass are what made panels look solid. */
+     (55%) from the first glass pass are what made panels look solid.
+     Root cause of the invisible glass (proven by screenshot 2026-11-18):
+     backdrop-filter only blurs what is BEHIND a panel, and behind these
+     panels was near-black plus faint edge glows — so the blur showed
+     nothing. The fix is colour placed directly behind each panel: big,
+     vivid aurora blobs (25–40% alpha) centred on every glass surface,
+     via per-panel ::before layers plus a much stronger page background.
+     Fills stay as they are — lowering them further would not fix it and
+     would hurt readability. */
   --glass-fill: rgba(255, 255, 255, 0.10);
   --glass-fill-strong: rgba(13, 16, 19, 0.25);
   --glass-border: rgba(255, 255, 255, 0.18);
@@ -49,22 +59,26 @@ css = '''
   padding-top: 1.6rem;
   max-width: 72rem;
 }
-/* Ambient glows behind the glass: backdrop-filter only refracts what is
-   painted behind a panel, so these big, clearly visible colour washes give
-   the blur something to pick up. Signal green + sky blue/teal only — same
-   palette, no rainbow. The first pass used three faint glows (6–10% alpha)
-   over near-flat ink, which is why the glass looked invisible: blur over
-   flat black reads as nothing. Blobs sit at the edges/corners so the
-   centre, where long chat answers live, stays calmer for readability. */
+/* Ambient aurora behind the glass: backdrop-filter only refracts what is
+   painted behind a panel, so these washes are now LARGE, VIVID and placed
+   across the CENTRE of the viewport — not just at the edges/corners — with
+   24–34% alpha, over a very dark green-tinted base instead of pure
+   near-black. background-attachment: fixed anchors the washes to the
+   viewport so scrolled content (long chat answers) always has colour
+   behind it; if a browser ignores fixed attachment the gradients still
+   render, positioned over the page. The strong left-edge green/teal blobs
+   sit directly behind the sidebar. Signal green + sky blue/teal only —
+   same palette, no rainbow. */
 div[data-testid="stAppViewContainer"] {
   background:
-    linear-gradient(135deg, rgba(61, 245, 168, 0.05), transparent 42%, rgba(56, 189, 248, 0.05)),
-    radial-gradient(62rem 40rem at 6% -10%, rgba(61, 245, 168, 0.24), transparent 62%),
-    radial-gradient(54rem 36rem at 98% 4%, rgba(56, 189, 248, 0.20), transparent 62%),
-    radial-gradient(46rem 30rem at 90% 58%, rgba(45, 212, 191, 0.13), transparent 60%),
-    radial-gradient(58rem 38rem at 4% 92%, rgba(61, 245, 168, 0.15), transparent 62%),
-    radial-gradient(42rem 28rem at 55% 108%, rgba(56, 189, 248, 0.11), transparent 60%),
-    #0B0D10;
+    radial-gradient(52rem 34rem at 50% -8%, rgba(61, 245, 168, 0.34), transparent 65%),
+    radial-gradient(44rem 28rem at 92% 10%, rgba(56, 189, 248, 0.30), transparent 65%),
+    radial-gradient(46rem 30rem at 4% 28%, rgba(61, 245, 168, 0.32), transparent 65%),
+    radial-gradient(48rem 30rem at 50% 52%, rgba(45, 212, 191, 0.24), transparent 65%),
+    radial-gradient(44rem 28rem at 96% 72%, rgba(56, 189, 248, 0.24), transparent 65%),
+    radial-gradient(48rem 30rem at 6% 96%, rgba(61, 245, 168, 0.28), transparent 65%),
+    linear-gradient(180deg, #0B120E 0%, #0A0F0C 55%, #0A100D 100%);
+  background-attachment: fixed;
 }
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
@@ -84,6 +98,7 @@ a:hover { background-size: 100% 1px; }
 
 /* ---------- hero ---------- */
 .hero {
+  position: relative;
   padding: 1.4rem 1.5rem 1.3rem;
   border: 1px solid var(--glass-border);
   border-radius: 20px;
@@ -91,6 +106,24 @@ a:hover { background-size: 100% 1px; }
   -webkit-backdrop-filter: blur(18px) saturate(140%);
   backdrop-filter: blur(18px) saturate(140%);
   box-shadow: var(--glass-shadow);
+}
+/* Vivid aurora blob directly behind the hero: larger than the panel,
+   centred on it, so the hero's own blur refracts real colour. The ::before
+   sits at z-index -1 inside the hero's backdrop-filter stacking context,
+   i.e. behind the translucent fill but in front of the page — and it
+   carries its own blur, so the colour reads as glass even where the
+   backdrop-filter sampling is weak. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -70px -48px;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side at 28% 42%, rgba(61, 245, 168, 0.40), transparent 72%),
+    radial-gradient(closest-side at 74% 58%, rgba(56, 189, 248, 0.32), transparent 72%);
+  filter: blur(16px);
+  pointer-events: none;
 }
 .hero-eyebrow {
   font-family: 'JetBrains Mono', monospace;
@@ -137,6 +170,7 @@ a:hover { background-size: 100% 1px; }
   animation: fadeUp 0.7s 0.16s ease both;
 }
 .status-pill {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
@@ -154,6 +188,18 @@ a:hover { background-size: 100% 1px; }
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: fadeUp 0.7s 0.24s ease both;
 }
+.status-pill::before {
+  content: "";
+  position: absolute;
+  inset: -20px -16px;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side at 35% 50%, rgba(61, 245, 168, 0.38), transparent 72%),
+    radial-gradient(closest-side at 72% 50%, rgba(45, 212, 191, 0.30), transparent 72%);
+  filter: blur(10px);
+  pointer-events: none;
+}
 .status-pill .dot {
   width: 8px;
   height: 8px;
@@ -168,6 +214,7 @@ a:hover { background-size: 100% 1px; }
 
 /* ---------- step cards ---------- */
 .step-card {
+  position: relative;
   border: 1px solid var(--glass-border);
   border-radius: 14px;
   padding: 1.1rem 1.15rem;
@@ -177,6 +224,19 @@ a:hover { background-size: 100% 1px; }
   box-shadow: var(--glass-shadow);
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   animation: fadeUp 0.7s 0.3s ease both;
+}
+/* One aurora blob per card, centred on the card and larger than it. */
+.step-card::before {
+  content: "";
+  position: absolute;
+  inset: -46px -32px;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side at 30% 32%, rgba(61, 245, 168, 0.36), transparent 72%),
+    radial-gradient(closest-side at 72% 70%, rgba(45, 212, 191, 0.28), transparent 72%);
+  filter: blur(16px);
+  pointer-events: none;
 }
 .step-card:hover {
   transform: translateY(-4px);
@@ -227,7 +287,23 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 }
 
 /* ---------- inputs ---------- */
-div[data-testid="stTextInput"] { margin-top: 0.6rem; }
+div[data-testid="stTextInput"] {
+  margin-top: 0.6rem;
+  position: relative;
+  isolation: isolate;
+}
+/* Inputs can't take ::before, so the blob lives on the wrapper behind the
+   translucent input, which blurs it. */
+div[data-testid="stTextInput"]::before {
+  content: "";
+  position: absolute;
+  inset: -22px -16px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side at 50% 50%, rgba(56, 189, 248, 0.30), transparent 72%);
+  filter: blur(14px);
+  pointer-events: none;
+}
 div[data-testid="stTextInput"] input {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.08);
@@ -241,6 +317,7 @@ div[data-testid="stTextInput"] input:focus {
   box-shadow: 0 0 0 3px rgba(61, 245, 168, 0.15) !important;
 }
 div[data-testid="stFileUploader"] > section {
+  position: relative;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
@@ -249,27 +326,53 @@ div[data-testid="stFileUploader"] > section {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   transition: border-color 0.2s ease;
 }
+div[data-testid="stFileUploader"] > section::before {
+  content: "";
+  position: absolute;
+  inset: -30px -20px;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side at 35% 45%, rgba(61, 245, 168, 0.34), transparent 72%),
+    radial-gradient(closest-side at 70% 60%, rgba(45, 212, 191, 0.26), transparent 72%);
+  filter: blur(14px);
+  pointer-events: none;
+}
 div[data-testid="stFileUploader"] > section:hover {
   border-color: rgba(61, 245, 168, 0.5);
 }
 
 /* ---------- sidebar ---------- */
 /* Frosted sidebar: translucent fill + blur over the app background. This is
-   the most fragile glass surface — Streamlit paints the sidebar as a fixed
-   panel, so the blur mostly softens the ambient glow at its edge; if a
-   Streamlit-managed layer stays opaque, it still reads as a translucent
-   dark panel rather than true frosted glass. Fill cut from 55% to 25% dark
-   ink: at 55% it was effectively solid against the near-black page. The
-   left-edge green glows sit directly behind the sidebar, so this is where
-   the colour should show through most. */
+   the most fragile glass surface — Streamlit paints the sidebar as a
+   Streamlit-managed panel, so a ::before blob cannot be safely anchored to
+   it (its positioning is not guaranteed, and a mis-anchored blob would wash
+   the whole page). Instead the colour is baked into the sidebar's own
+   background: vivid green/teal/sky gradient washes UNDER a 20% dark-ink
+   veil, so colour shows through the glass by construction, on top of the
+   strong left-edge blobs in the page background that the backdrop-filter
+   refracts. Deeper sidebar layers are forced transparent so no
+   Streamlit-managed opaque layer hides the glass. If a Streamlit layer
+   still stays opaque, the sidebar will read as a dark panel with visible
+   green/teal washes rather than true frosted glass — a screenshot check is
+   the only way to confirm. */
 section[data-testid="stSidebar"] {
-  background: rgba(13, 16, 19, 0.25) !important;
+  background:
+    linear-gradient(180deg, rgba(13, 16, 19, 0.20), rgba(13, 16, 19, 0.20)),
+    radial-gradient(24rem 20rem at 18% 10%, rgba(61, 245, 168, 0.34), transparent 70%),
+    radial-gradient(22rem 18rem at 82% 52%, rgba(45, 212, 191, 0.26), transparent 70%),
+    radial-gradient(24rem 20rem at 28% 94%, rgba(56, 189, 248, 0.24), transparent 70%),
+    rgba(13, 16, 19, 0.25) !important;
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
   border-right: 1px solid var(--glass-border);
   box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25);
 }
-section[data-testid="stSidebar"] > div { background-color: transparent; }
+section[data-testid="stSidebar"] > div,
+section[data-testid="stSidebar"] div[data-testid="stSidebarUserContent"],
+section[data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+  background-color: transparent !important;
+}
 section[data-testid="stSidebar"] input {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--glass-border);
@@ -312,6 +415,7 @@ section[data-testid="stSidebar"] input {
 
 /* ---------- chat ---------- */
 .chat-message {
+  position: relative;
   padding: 1.1rem 1.2rem;
   border-radius: 14px;
   margin-bottom: 0.9rem;
@@ -323,6 +427,25 @@ section[data-testid="stSidebar"] input {
   backdrop-filter: blur(14px) saturate(140%);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: slideIn 0.35s ease both;
+}
+/* One aurora blob per bubble, centred on the bubble and larger than it, so
+   each chat message refracts its own colour instead of flat black. */
+.chat-message::before {
+  content: "";
+  position: absolute;
+  inset: -34px -26px;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(16px);
+  pointer-events: none;
+}
+.chat-message.user::before {
+  background: radial-gradient(closest-side at 50% 50%, rgba(61, 245, 168, 0.34), transparent 72%);
+}
+.chat-message.bot::before {
+  background:
+    radial-gradient(closest-side at 30% 40%, rgba(56, 189, 248, 0.30), transparent 72%),
+    radial-gradient(closest-side at 72% 62%, rgba(45, 212, 191, 0.26), transparent 72%);
 }
 .chat-message.user {
   background: rgba(61, 245, 168, 0.12);
