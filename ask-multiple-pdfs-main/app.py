@@ -148,7 +148,7 @@ def handle_userinput(user_question):
 
 def main():
     load_dotenv()
-    st.set_page_config(page_title="Chat with multiple PDFs (Free HF Edition)",
+    st.set_page_config(page_title="Ask your PDFs",
                        page_icon=":books:",
                        layout="wide")
     st.markdown(css, unsafe_allow_html=True)
@@ -159,19 +159,35 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Chat with multiple PDFs (Hugging Face) :books:")
-    
-    # Custom instructions container
-    with st.expander("ℹ️ How to use", expanded=True):
-        st.write("""
-        1. Enter your **Hugging Face API Token** (starts with `hf_...`) in the sidebar.
-        2. Upload your PDF documents in the sidebar.
-        3. Click **Process** and wait for the documents to be analyzed.
-        4. Ask a question about your documents below.
-        """)
+    # Status pill: honest state, no invented progress
+    if st.session_state.conversation:
+        status = '<span class="status-pill"><span class="dot"></span>Documents ready. Ask away.</span>'
+    elif st.session_state.get("api_key_set"):
+        status = '<span class="status-pill"><span class="dot amber"></span>Token added. Upload your PDFs next.</span>'
+    else:
+        status = '<span class="status-pill"><span class="dot amber"></span>Add your token to start.</span>'
+
+    st.markdown(
+        '<div class="hero">'
+        '<div class="hero-eyebrow"><span class="dot"></span>Chat with your PDFs</div>'
+        '<h1 class="hero-title">Ask your PDFs<br><span class="grad">anything.</span></h1>'
+        '<p class="hero-sub">Upload your documents, then ask questions in plain words. '
+        'Every answer comes only from the pages you upload.</p>'
+        + status +
+        '</div>',
+        unsafe_allow_html=True)
+
+    # Step flow
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown('<div class="step-card"><div class="step-num">01</div><h3>Add your token</h3><p>Paste a free Hugging Face token in the sidebar. It is the key that lets the app read and answer.</p></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="step-card"><div class="step-num">02</div><h3>Upload and process</h3><p>Drop in one or more PDFs and press Process. The app reads every page and gets it ready to search.</p></div>', unsafe_allow_html=True)
+    with col3:
+        st.markdown('<div class="step-card"><div class="step-num">03</div><h3>Ask away</h3><p>Type a question below. The answer comes from your documents, and the chat stays on screen so you can follow along.</p></div>', unsafe_allow_html=True)
 
     user_question = st.text_input("Ask a question about your documents:", placeholder="e.g., What are the key takeaways from the uploaded documents?")
-    
+
     # Clear / Reset chat button
     if st.session_state.chat_history:
         if st.button("Clear Chat"):
@@ -182,11 +198,12 @@ def main():
         handle_userinput(user_question)
 
     with st.sidebar:
-        st.subheader("Configuration")
-        
+        st.markdown('<div class="side-head">Set up</div>', unsafe_allow_html=True)
+        st.markdown('<p class="side-note">You need a free token from Hugging Face to get answers. <a href="https://huggingface.co/settings/tokens" target="_blank">Get one here</a>, then paste it below.</p>', unsafe_allow_html=True)
+
         # Check environment first
         env_key = os.getenv("HUGGINGFACEHUB_API_TOKEN", "")
-        
+
         # User input for API Key (masked)
         api_key_raw = st.text_input("Hugging Face API Token", type="password", value=env_key, placeholder="hf_...")
         # Clean the token: strip whitespace and remove any non-ASCII characters
@@ -197,11 +214,11 @@ def main():
         else:
             st.session_state.api_key_set = False
 
-        st.subheader("Your documents")
+        st.markdown('<div class="side-head">Your documents</div>', unsafe_allow_html=True)
         pdf_docs = st.file_uploader(
             "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
-        
-        if st.button("Process"):
+
+        if st.button("Process", type="primary"):
             if not api_key:
                 st.error("⚠️ Please enter your Hugging Face API token first.")
             elif not pdf_docs:
@@ -223,9 +240,11 @@ def main():
 
                         # create conversation chain
                         st.session_state.conversation = get_conversation_chain(vectorstore)
-                        st.success("Done — your documents are ready. Ask a question below.")
+                        st.success("Done. Your documents are ready. Ask a question below.")
                     except Exception as e:
                         st.error(f"Error processing PDFs: {e}")
+
+        st.markdown('<p class="side-foot">Answers come from the PDFs you upload, nothing else.</p>', unsafe_allow_html=True)
 
 
 if __name__ == '__main__':

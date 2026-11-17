@@ -1,8 +1,8 @@
-# Dark theme to match the chat bubbles (#2b313e / #475063), with a calm indigo accent.
+# Tech precise theme: near-black ink, one signal green accent.
 [theme]
 base = "dark"
-primaryColor = "#7C8CF8"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#262730"
-textColor = "#FAFAFA"
+primaryColor = "#3DF5A8"
+backgroundColor = "#0B0D10"
+secondaryBackgroundColor = "#14181D"
+textColor = "#D8DDE3"
 font = "sans serif"
