@@ -11,11 +11,14 @@ css = '''
   --text: #D8DDE3;
   --muted: #8A919C;
   --bright: #F2F5F3;
-  /* glassmorphism layer: frosted surfaces over the dark ink */
-  --glass-fill: rgba(255, 255, 255, 0.055);
-  --glass-fill-strong: rgba(20, 24, 29, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  /* glassmorphism layer: frosted surfaces over the dark ink.
+     Fills are deliberately translucent (8–25%): the blur only reads as
+     glass when colour shows through it. The two near-opaque dark fills
+     (55%) from the first glass pass are what made panels look solid. */
+  --glass-fill: rgba(255, 255, 255, 0.10);
+  --glass-fill-strong: rgba(13, 16, 19, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
 
 /* ---------- motion ---------- */
@@ -47,13 +50,20 @@ css = '''
   max-width: 72rem;
 }
 /* Ambient glows behind the glass: backdrop-filter only refracts what is
-   painted behind a panel, so these soft radial washes give the blur
-   something to pick up. Same palette, no new colours. */
+   painted behind a panel, so these big, clearly visible colour washes give
+   the blur something to pick up. Signal green + sky blue/teal only — same
+   palette, no rainbow. The first pass used three faint glows (6–10% alpha)
+   over near-flat ink, which is why the glass looked invisible: blur over
+   flat black reads as nothing. Blobs sit at the edges/corners so the
+   centre, where long chat answers live, stays calmer for readability. */
 div[data-testid="stAppViewContainer"] {
   background:
-    radial-gradient(42rem 26rem at 12% -6%, rgba(61, 245, 168, 0.10), transparent 60%),
-    radial-gradient(38rem 24rem at 92% 8%, rgba(125, 211, 252, 0.08), transparent 60%),
-    radial-gradient(30rem 20rem at 50% 110%, rgba(61, 245, 168, 0.06), transparent 60%),
+    linear-gradient(135deg, rgba(61, 245, 168, 0.05), transparent 42%, rgba(56, 189, 248, 0.05)),
+    radial-gradient(62rem 40rem at 6% -10%, rgba(61, 245, 168, 0.24), transparent 62%),
+    radial-gradient(54rem 36rem at 98% 4%, rgba(56, 189, 248, 0.20), transparent 62%),
+    radial-gradient(46rem 30rem at 90% 58%, rgba(45, 212, 191, 0.13), transparent 60%),
+    radial-gradient(58rem 38rem at 4% 92%, rgba(61, 245, 168, 0.15), transparent 62%),
+    radial-gradient(42rem 28rem at 55% 108%, rgba(56, 189, 248, 0.11), transparent 60%),
     #0B0D10;
 }
 #MainMenu { visibility: hidden; }
@@ -138,7 +148,7 @@ a:hover { background-size: 100% 1px; }
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.10);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   backdrop-filter: blur(12px) saturate(140%);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -161,7 +171,7 @@ a:hover { background-size: 100% 1px; }
   border: 1px solid var(--glass-border);
   border-radius: 14px;
   padding: 1.1rem 1.15rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   backdrop-filter: blur(16px) saturate(140%);
   box-shadow: var(--glass-shadow);
@@ -171,7 +181,7 @@ a:hover { background-size: 100% 1px; }
 .step-card:hover {
   transform: translateY(-4px);
   border-color: var(--signal-dim);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(61, 245, 168, 0.15);
 }
 .step-num {
@@ -220,7 +230,7 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 div[data-testid="stTextInput"] { margin-top: 0.6rem; }
 div[data-testid="stTextInput"] input {
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
@@ -232,7 +242,7 @@ div[data-testid="stTextInput"] input:focus {
 }
 div[data-testid="stFileUploader"] > section {
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   backdrop-filter: blur(12px) saturate(140%);
   border: 1px dashed rgba(255, 255, 255, 0.22);
@@ -248,9 +258,12 @@ div[data-testid="stFileUploader"] > section:hover {
    the most fragile glass surface — Streamlit paints the sidebar as a fixed
    panel, so the blur mostly softens the ambient glow at its edge; if a
    Streamlit-managed layer stays opaque, it still reads as a translucent
-   dark panel rather than true frosted glass. */
+   dark panel rather than true frosted glass. Fill cut from 55% to 25% dark
+   ink: at 55% it was effectively solid against the near-black page. The
+   left-edge green glows sit directly behind the sidebar, so this is where
+   the colour should show through most. */
 section[data-testid="stSidebar"] {
-  background: rgba(13, 16, 19, 0.55) !important;
+  background: rgba(13, 16, 19, 0.25) !important;
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
   border-right: 1px solid var(--glass-border);
@@ -258,7 +271,7 @@ section[data-testid="stSidebar"] {
 }
 section[data-testid="stSidebar"] > div { background-color: transparent; }
 section[data-testid="stSidebar"] input {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--glass-border);
 }
 .side-head {
@@ -308,15 +321,18 @@ section[data-testid="stSidebar"] input {
   border: 1px solid var(--glass-border);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: slideIn 0.35s ease both;
 }
 .chat-message.user {
-  background: rgba(61, 245, 168, 0.10);
+  background: rgba(61, 245, 168, 0.12);
   border-color: rgba(61, 245, 168, 0.25);
 }
 .chat-message.bot {
-  /* Stronger fill than other glass: long answer text must stay readable. */
+  /* Strongest glass fill in the app (25% dark ink, down from 55%): long
+     answer text must stay readable over the brighter ambient colour, and
+     the dark fill + 14px blur keeps #E6EAE9 text on a calm surface while
+     still letting the glow show through at the edges. */
   background: var(--glass-fill-strong);
 }
 .chat-message .avatar {
