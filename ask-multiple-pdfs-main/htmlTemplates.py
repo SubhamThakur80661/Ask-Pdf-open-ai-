@@ -11,6 +11,11 @@ css = '''
   --text: #D8DDE3;
   --muted: #8A919C;
   --bright: #F2F5F3;
+  /* glassmorphism layer: frosted surfaces over the dark ink */
+  --glass-fill: rgba(255, 255, 255, 0.055);
+  --glass-fill-strong: rgba(20, 24, 29, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* ---------- motion ---------- */
@@ -41,6 +46,16 @@ css = '''
   padding-top: 1.6rem;
   max-width: 72rem;
 }
+/* Ambient glows behind the glass: backdrop-filter only refracts what is
+   painted behind a panel, so these soft radial washes give the blur
+   something to pick up. Same palette, no new colours. */
+div[data-testid="stAppViewContainer"] {
+  background:
+    radial-gradient(42rem 26rem at 12% -6%, rgba(61, 245, 168, 0.10), transparent 60%),
+    radial-gradient(38rem 24rem at 92% 8%, rgba(125, 211, 252, 0.08), transparent 60%),
+    radial-gradient(30rem 20rem at 50% 110%, rgba(61, 245, 168, 0.06), transparent 60%),
+    #0B0D10;
+}
 #MainMenu { visibility: hidden; }
 footer { visibility: hidden; }
 header[data-testid="stHeader"] { background: transparent; }
@@ -58,7 +73,15 @@ a {
 a:hover { background-size: 100% 1px; }
 
 /* ---------- hero ---------- */
-.hero { padding: 0.6rem 0 0.2rem; }
+.hero {
+  padding: 1.4rem 1.5rem 1.3rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: var(--glass-shadow);
+}
 .hero-eyebrow {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
@@ -109,13 +132,16 @@ a:hover { background-size: 100% 1px; }
   gap: 0.55rem;
   margin-top: 1.2rem;
   padding: 0.45rem 0.95rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: fadeUp 0.7s 0.24s ease both;
 }
 .status-pill .dot {
@@ -132,16 +158,20 @@ a:hover { background-size: 100% 1px; }
 
 /* ---------- step cards ---------- */
 .step-card {
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
   border-radius: 14px;
   padding: 1.1rem 1.15rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.005));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: var(--glass-shadow);
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   animation: fadeUp 0.7s 0.3s ease both;
 }
 .step-card:hover {
   transform: translateY(-4px);
   border-color: var(--signal-dim);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(61, 245, 168, 0.15);
 }
 .step-num {
@@ -190,6 +220,10 @@ div[data-testid="stButton"] > button[kind="primary"]:hover {
 div[data-testid="stTextInput"] { margin-top: 0.6rem; }
 div[data-testid="stTextInput"] input {
   border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 div[data-testid="stTextInput"] input:focus {
@@ -198,6 +232,11 @@ div[data-testid="stTextInput"] input:focus {
 }
 div[data-testid="stFileUploader"] > section {
   border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   transition: border-color 0.2s ease;
 }
 div[data-testid="stFileUploader"] > section:hover {
@@ -205,7 +244,23 @@ div[data-testid="stFileUploader"] > section:hover {
 }
 
 /* ---------- sidebar ---------- */
-section[data-testid="stSidebar"] { border-right: 1px solid var(--line); }
+/* Frosted sidebar: translucent fill + blur over the app background. This is
+   the most fragile glass surface — Streamlit paints the sidebar as a fixed
+   panel, so the blur mostly softens the ambient glow at its edge; if a
+   Streamlit-managed layer stays opaque, it still reads as a translucent
+   dark panel rather than true frosted glass. */
+section[data-testid="stSidebar"] {
+  background: rgba(13, 16, 19, 0.55) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border-right: 1px solid var(--glass-border);
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25);
+}
+section[data-testid="stSidebar"] > div { background-color: transparent; }
+section[data-testid="stSidebar"] input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+}
 .side-head {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
@@ -250,15 +305,19 @@ section[data-testid="stSidebar"] { border-right: 1px solid var(--line); }
   display: flex;
   gap: 1rem;
   align-items: flex-start;
-  border: 1px solid var(--line);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   animation: slideIn 0.35s ease both;
 }
 .chat-message.user {
-  background: rgba(61, 245, 168, 0.06);
+  background: rgba(61, 245, 168, 0.10);
   border-color: rgba(61, 245, 168, 0.25);
 }
 .chat-message.bot {
-  background: var(--panel);
+  /* Stronger fill than other glass: long answer text must stay readable. */
+  background: var(--glass-fill-strong);
 }
 .chat-message .avatar {
   flex: 0 0 44px;
@@ -276,6 +335,28 @@ section[data-testid="stSidebar"] { border-right: 1px solid var(--line); }
   font-size: 0.98rem;
   padding: 0;
   word-break: break-word;
+}
+
+/* ---------- glass fallbacks ---------- */
+/* No backdrop-filter support: fall back to stronger, near-opaque fills so
+   text stays readable instead of floating on a faint wash. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hero, .step-card { background: rgba(20, 24, 29, 0.88); }
+  .status-pill { background: rgba(20, 24, 29, 0.88); }
+  .chat-message.bot { background: #14181D; }
+  .chat-message.user { background: rgba(61, 245, 168, 0.14); }
+  section[data-testid="stSidebar"] { background: #101418 !important; }
+  div[data-testid="stTextInput"] input,
+  div[data-testid="stFileUploader"] > section { background: rgba(20, 24, 29, 0.88); }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .hero-title .grad { animation: none; }
 }
 </style>
 '''
