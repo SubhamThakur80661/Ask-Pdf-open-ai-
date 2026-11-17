@@ -1,7 +1,7 @@
 css = '''
 <style>
 .chat-message {
-    padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex
+    padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; display: flex; border: 1px solid rgba(255, 255, 255, 0.06)
 }
 .chat-message.user {
     background-color: #2b313e
@@ -22,6 +22,10 @@ css = '''
   width: 80%;
   padding: 0 1.5rem;
   color: #fff;
+  line-height: 1.6;
+}
+.block-container {
+  padding-top: 2rem;
 }
 '''
 

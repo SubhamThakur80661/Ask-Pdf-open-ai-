@@ -123,7 +123,7 @@ def get_conversation_chain(vectorstore):
 
 def handle_userinput(user_question):
     if not st.session_state.conversation or isinstance(st.session_state.conversation, type(lambda: None)):
-        st.warning("Please upload and process your PDFs first to start the conversation!")
+        st.warning("Upload and process your PDFs first, then ask away.")
         return
 
     # Ensure API key is set before querying
@@ -167,7 +167,7 @@ def main():
         1. Enter your **Hugging Face API Token** (starts with `hf_...`) in the sidebar.
         2. Upload your PDF documents in the sidebar.
         3. Click **Process** and wait for the documents to be analyzed.
-        4. Ask questions about your documents in the chat input below!
+        4. Ask a question about your documents below.
         """)
 
     user_question = st.text_input("Ask a question about your documents:", placeholder="e.g., What are the key takeaways from the uploaded documents?")
@@ -207,7 +207,7 @@ def main():
             elif not pdf_docs:
                 st.error("⚠️ Please upload at least one PDF file.")
             else:
-                with st.spinner("Analyzing and embedding PDFs..."):
+                with st.spinner("Reading your PDFs..."):
                     try:
                         # get pdf text
                         raw_text = get_pdf_text(pdf_docs)
@@ -223,7 +223,7 @@ def main():
 
                         # create conversation chain
                         st.session_state.conversation = get_conversation_chain(vectorstore)
-                        st.success("🎉 Documents processed successfully! You can now start chatting.")
+                        st.success("Done — your documents are ready. Ask a question below.")
                     except Exception as e:
                         st.error(f"Error processing PDFs: {e}")
 
