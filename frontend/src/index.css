@@ -61,3 +61,68 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ---- OpCit design upgrade: glassmorphism, motion, CSS 3D ---- */
+
+@layer utilities {
+  /* Frosted glass panels (light scheme — dark ink text stays readable) */
+  .glass {
+    background: rgba(255, 255, 255, 0.62);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow: 0 8px 32px rgba(30, 58, 138, 0.08);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 12px 40px rgba(30, 58, 138, 0.1);
+  }
+
+  /* CSS 3D scene helpers */
+  .perspective-1200 {
+    perspective: 1200px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+@keyframes aurora-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(44px, 28px) scale(1.08); }
+  100% { transform: translate(-28px, -18px) scale(0.96); }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes shimmer-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+@layer utilities {
+  .animate-aurora { animation: aurora-drift 26s ease-in-out infinite alternate; }
+  .animate-float { animation: float-y 5s ease-in-out infinite; }
+  .animate-float-slow { animation: float-y 8s ease-in-out infinite; }
+  .animate-rise { animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .animate-pop { animation: pop-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .animate-shimmer { animation: shimmer-slide 1.6s ease-in-out infinite; }
+}

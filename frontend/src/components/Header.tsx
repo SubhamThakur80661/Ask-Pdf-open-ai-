@@ -18,11 +18,11 @@ export const Header: FC<HeaderProps> = ({
   onOpenSettings,
 }) => {
   return (
-    <header className="border-b border-[#e7e4db] bg-paper-50 sticky top-0 z-30 transition-colors">
+    <header className="border-b border-white/60 bg-white/70 backdrop-blur-xl sticky top-0 z-30 transition-colors shadow-[0_8px_24px_rgba(30,58,138,0.06)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand / Logo */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-md bg-ink-900 text-paper-50 flex items-center justify-center font-serif font-bold text-lg shadow-sm border border-ink-800">
+          <div className="w-9 h-9 rounded-md bg-ink-900 text-paper-50 flex items-center justify-center font-serif font-bold text-lg shadow-sm border border-ink-800 transition-transform duration-300 hover:rotate-[-6deg] hover:scale-105">
             <span>Op</span>
           </div>
           <div>
@@ -56,17 +56,22 @@ export const Header: FC<HeaderProps> = ({
             role="status"
             aria-live="polite"
           >
-            <span
-              className={`w-2 h-2 rounded-full ${
-                status === 'online'
-                  ? 'bg-emerald-500'
-                  : status === 'checking'
-                  ? 'bg-amber-500 animate-pulse'
-                  : status === 'offline'
-                  ? 'bg-rose-500'
-                  : 'bg-zinc-400'
-              }`}
-            />
+            <span className="relative flex w-2 h-2">
+              {status === 'online' && (
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+              )}
+              <span
+                className={`relative inline-flex w-2 h-2 rounded-full ${
+                  status === 'online'
+                    ? 'bg-emerald-500'
+                    : status === 'checking'
+                    ? 'bg-amber-500 animate-pulse'
+                    : status === 'offline'
+                    ? 'bg-rose-500'
+                    : 'bg-zinc-400'
+                }`}
+              />
+            </span>
             <span className="capitalize">
               {status === 'online'
                 ? 'Online'

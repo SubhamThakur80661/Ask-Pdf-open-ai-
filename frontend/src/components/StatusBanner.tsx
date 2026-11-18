@@ -89,7 +89,7 @@ export const StatusBanner: FC<StatusBannerProps> = ({
 
   if (!hasToken && backendStatus === 'online') {
     return (
-      <div className="bg-amber-50/90 border-b border-amber-200/80 px-4 py-2 text-xs text-amber-900">
+      <div className="bg-amber-50/90 backdrop-blur-md border-b border-amber-200/80 px-4 py-2 text-xs text-amber-900 animate-rise">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-amber-600 flex-shrink-0" />

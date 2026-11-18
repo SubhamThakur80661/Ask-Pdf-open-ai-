@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, type FC, type FormEvent, type KeyboardEvent } from 'react';
 import { Send, Download, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
+import { FloatingDocs } from './FloatingDocs';
 import type { Message, DocumentInfo } from '../types';
 
 interface ChatAreaProps {
@@ -107,7 +108,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-4xl mx-auto w-full">
       {/* Chat Top Controls Bar */}
-      <div className="px-4 sm:px-6 py-2.5 border-b border-[#e7e4db] flex items-center justify-between bg-paper-50/80 backdrop-blur-sm z-10">
+      <div className="px-4 sm:px-6 py-2.5 border-b border-white/60 flex items-center justify-between bg-white/60 backdrop-blur-xl z-10">
         <div className="text-xs text-ink-600 font-medium">
           {hasDocs ? (
             <span>
@@ -148,7 +149,8 @@ export const ChatArea: FC<ChatAreaProps> = ({
         {messages.length === 0 ? (
           /* Empty State */
           <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-6 max-w-xl mx-auto my-auto">
-            <div className="space-y-2">
+            <FloatingDocs />
+            <div className="space-y-2 animate-rise">
               <h2 className="text-2xl font-serif font-bold text-ink-950">
                 Ask your documents.
               </h2>
@@ -158,11 +160,11 @@ export const ChatArea: FC<ChatAreaProps> = ({
             </div>
 
             {/* Step flow cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left animate-rise" style={{ animationDelay: '120ms' }}>
               <button
                 type="button"
                 onClick={onOpenSettings}
-                className="p-3.5 rounded-lg bg-white border border-paper-300 shadow-subtle space-y-1 text-left hover:border-paper-400 focus-ring transition-all"
+                className="p-3.5 rounded-lg bg-white/75 backdrop-blur-md border border-white/70 shadow-subtle space-y-1 text-left hover:border-paper-400 hover:-translate-y-1 hover:shadow-card focus-ring transition-all"
               >
                 <span className="text-[10px] font-mono font-bold text-scholar px-1.5 py-0.5 rounded bg-paper-100 border border-paper-200">
                   01
@@ -173,7 +175,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
                 </p>
               </button>
 
-              <div className="p-3.5 rounded-lg bg-white border border-paper-300 shadow-subtle space-y-1">
+              <div className="p-3.5 rounded-lg bg-white/75 backdrop-blur-md border border-white/70 shadow-subtle space-y-1 hover:-translate-y-1 hover:shadow-card transition-all">
                 <span className="text-[10px] font-mono font-bold text-scholar px-1.5 py-0.5 rounded bg-paper-100 border border-paper-200">
                   02
                 </span>
@@ -183,7 +185,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-lg bg-white border border-paper-300 shadow-subtle space-y-1">
+              <div className="p-3.5 rounded-lg bg-white/75 backdrop-blur-md border border-white/70 shadow-subtle space-y-1 hover:-translate-y-1 hover:shadow-card transition-all">
                 <span className="text-[10px] font-mono font-bold text-scholar px-1.5 py-0.5 rounded bg-paper-100 border border-paper-200">
                   03
                 </span>
@@ -206,7 +208,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
                     <button
                       key={idx}
                       onClick={() => onSendMessage(prompt)}
-                      className="text-left px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-paper-100 text-ink-800 border border-paper-300 shadow-subtle hover:border-paper-400 transition-all focus-ring"
+                      className="text-left px-3 py-1.5 rounded-full text-xs font-medium bg-white/75 backdrop-blur-md hover:bg-white/90 text-ink-800 border border-white/70 shadow-subtle hover:border-paper-400 hover:-translate-y-0.5 transition-all focus-ring"
                     >
                       {prompt}
                     </button>
@@ -224,7 +226,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
 
             {/* Thinking / In-Flight Indicator */}
             {isLoading && (
-              <div className="py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 bg-white/40 border-y border-[#ede9df]">
+              <div className="py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 bg-white/60 backdrop-blur-md border-y border-white/60 animate-rise">
                 <div className="flex items-start gap-3.5 max-w-3xl">
                   <div className="w-7 h-7 rounded bg-ink-900 text-paper-50 flex items-center justify-center font-serif text-xs font-bold border border-ink-800 shadow-subtle">
                     <span>Op</span>
@@ -237,7 +239,11 @@ export const ChatArea: FC<ChatAreaProps> = ({
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-ink-600">
-                      <Loader2 className="w-4 h-4 animate-spin text-scholar" />
+                      <span className="flex gap-1" aria-hidden="true">
+                        <span className="w-1.5 h-1.5 rounded-full bg-scholar animate-bounce" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-scholar animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-scholar animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </span>
                       <span className="italic font-serif">Consulting indexed pages...</span>
                     </div>
                   </div>
@@ -251,7 +257,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
 
       {/* Suggested chips row above composer when conversation is active */}
       {messages.length > 0 && hasDocs && !isLoading && (
-        <div className="px-4 sm:px-6 py-1.5 overflow-x-auto flex items-center gap-2 bg-paper-50/90 border-t border-paper-200">
+        <div className="px-4 sm:px-6 py-1.5 overflow-x-auto flex items-center gap-2 bg-white/60 backdrop-blur-xl border-t border-white/60">
           <span className="text-[10px] font-mono uppercase text-ink-500 flex-shrink-0">
             Suggested:
           </span>
@@ -259,7 +265,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
             <button
               key={idx}
               onClick={() => onSendMessage(prompt)}
-              className="text-xs whitespace-nowrap px-2.5 py-1 rounded-full bg-white hover:bg-paper-100 text-ink-700 border border-paper-300 shadow-subtle transition-all focus-ring flex-shrink-0"
+              className="text-xs whitespace-nowrap px-2.5 py-1 rounded-full bg-white/75 backdrop-blur-md hover:bg-white/90 text-ink-700 border border-white/70 shadow-subtle hover:-translate-y-0.5 transition-all focus-ring flex-shrink-0"
             >
               {prompt}
             </button>
@@ -268,9 +274,9 @@ export const ChatArea: FC<ChatAreaProps> = ({
       )}
 
       {/* Composer Input */}
-      <div className="p-4 sm:p-6 border-t border-[#e7e4db] bg-paper-50">
+      <div className="p-4 sm:p-6 border-t border-white/60 bg-white/60 backdrop-blur-xl">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="relative flex items-end rounded-xl border border-paper-300 bg-white shadow-subtle focus-within:border-ink-800 focus-within:ring-1 focus-within:ring-ink-800 transition-all overflow-hidden">
+          <div className="relative flex items-end rounded-xl border border-white/70 bg-white/85 backdrop-blur-md shadow-subtle focus-within:border-ink-800 focus-within:ring-1 focus-within:ring-ink-800 transition-all overflow-hidden">
             <textarea
               ref={textareaRef}
               rows={1}
@@ -292,7 +298,7 @@ export const ChatArea: FC<ChatAreaProps> = ({
               <button
                 type="submit"
                 disabled={disabled || isLoading || !hasDocs || !hasToken || !inputQuestion.trim()}
-                className="p-2 rounded-lg bg-ink-900 text-white hover:bg-ink-950 disabled:opacity-40 disabled:pointer-events-none transition-all focus-ring shadow-subtle"
+                className="p-2 rounded-lg bg-ink-900 text-white hover:bg-ink-950 hover:shadow-md active:scale-90 disabled:opacity-40 disabled:pointer-events-none transition-all focus-ring shadow-subtle"
                 aria-label="Send question"
                 title="Send question (Enter)"
               >

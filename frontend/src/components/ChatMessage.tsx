@@ -28,8 +28,8 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
 
   return (
     <article
-      className={`py-4 transition-colors ${
-        isAssistant ? 'bg-white/60 -mx-4 px-4 sm:-mx-6 sm:px-6 border-y border-[#ede9df]' : ''
+      className={`py-4 transition-colors animate-rise ${
+        isAssistant ? 'bg-white/70 backdrop-blur-md -mx-4 px-4 sm:-mx-6 sm:px-6 border-y border-white/60' : ''
       }`}
       aria-label={`${isAssistant ? 'Assistant response' : 'User question'}`}
     >
@@ -99,7 +99,7 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
                     <button
                       key={`${cite.doc}-${cite.page}-${idx}`}
                       onClick={() => toggleCitation(idx)}
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono border transition-all focus-ring ${
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono border transition-all hover:-translate-y-0.5 focus-ring ${
                         isExpanded
                           ? 'bg-scholar text-white border-scholar shadow-sm'
                           : 'bg-white hover:bg-paper-100 text-ink-800 border-paper-300'
@@ -125,7 +125,7 @@ export const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
 
               {/* Expanded Excerpt Callout */}
               {expandedCitationIndex !== null && message.citations[expandedCitationIndex] && (
-                <div className="mt-2 p-3.5 rounded-lg bg-paper-100 border border-paper-300 shadow-subtle space-y-1.5 transition-all">
+                <div className="mt-2 p-3.5 rounded-lg bg-white/80 backdrop-blur-md border border-white/70 shadow-subtle space-y-1.5 transition-all animate-rise">
                   <div className="flex items-center justify-between text-xs font-mono text-ink-700 pb-1 border-b border-paper-200">
                     <span className="font-semibold text-scholar">
                       {message.citations[expandedCitationIndex].doc} — Page{' '}

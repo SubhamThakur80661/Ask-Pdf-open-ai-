@@ -5,6 +5,7 @@ import { UploadZone } from './components/UploadZone';
 import { DocumentLibrary } from './components/DocumentLibrary';
 import { ChatArea } from './components/ChatArea';
 import { TokenSettingsModal } from './components/TokenSettingsModal';
+import { AmbientBackground } from './components/AmbientBackground';
 import type { BackendStatus, DocumentInfo, Message, UploadStage } from './types';
 import {
   checkHealth,
@@ -205,6 +206,8 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#faf9f5] text-ink-900 font-sans selection:bg-amber-100">
+      <AmbientBackground />
+      <div className="relative z-10 flex flex-col flex-1 min-h-0 animate-rise">
       {/* Header */}
       <Header
         status={backendStatus}
@@ -226,7 +229,7 @@ export function App() {
       />
 
       {/* Mobile Tab Switcher */}
-      <div className="md:hidden flex border-b border-[#dedad0] bg-paper-100 sticky top-16 z-20">
+      <div className="md:hidden flex border-b border-white/60 bg-white/70 backdrop-blur-xl sticky top-16 z-20">
         <button
           onClick={() => setMobileTab('documents')}
           className={`flex-1 py-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
@@ -255,7 +258,7 @@ export function App() {
       <main className="flex-1 flex overflow-hidden">
         {/* Left Sidebar: Document Management */}
         <aside
-          className={`w-full md:w-80 lg:w-96 border-r border-[#e7e4db] bg-paper-100/60 overflow-y-auto p-4 sm:p-5 space-y-6 flex-shrink-0 transition-all ${
+          className={`w-full md:w-80 lg:w-96 border-r border-white/60 bg-white/55 backdrop-blur-xl overflow-y-auto p-4 sm:p-5 space-y-6 flex-shrink-0 transition-all ${
             mobileTab === 'documents' ? 'block' : 'hidden md:block'
           } ${isSidebarOpen ? '' : 'md:hidden'}`}
           aria-label="Document Management Sidebar"
@@ -297,13 +300,13 @@ export function App() {
 
         {/* Right / Main Pane: Chat & Citations */}
         <section
-          className={`flex-1 flex flex-col min-w-0 bg-[#faf9f5] ${
+          className={`flex-1 flex flex-col min-w-0 bg-transparent ${
             mobileTab === 'chat' ? 'flex' : 'hidden md:flex'
           }`}
           aria-label="Inquiry and Citations Workspace"
         >
           {/* Desktop Sidebar Toggle */}
-          <div className="hidden md:flex items-center justify-between px-4 py-1 border-b border-paper-200/60 bg-paper-50/50 text-[11px] text-ink-500">
+          <div className="hidden md:flex items-center justify-between px-4 py-1 border-b border-white/60 bg-white/50 backdrop-blur-md text-[11px] text-ink-500">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="inline-flex items-center gap-1.5 text-ink-600 hover:text-ink-950 focus-ring rounded p-1 transition-colors"
@@ -346,6 +349,7 @@ export function App() {
         onSaveToken={handleSaveToken}
         onClearToken={handleClearToken}
       />
+      </div>
     </div>
   );
 }

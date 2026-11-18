@@ -22,8 +22,8 @@ export const DocumentLibrary: FC<DocumentLibraryProps> = ({
 
   if (documents.length === 0) {
     return (
-      <div className="rounded-lg border border-paper-300 bg-white p-6 text-center space-y-2">
-        <div className="w-10 h-10 rounded-full bg-paper-100 border border-paper-200 text-ink-500 mx-auto flex items-center justify-center">
+      <div className="rounded-lg border border-white/70 bg-white/75 backdrop-blur-md p-6 text-center space-y-2 animate-rise">
+        <div className="w-10 h-10 rounded-full bg-paper-100 border border-paper-200 text-ink-500 mx-auto flex items-center justify-center animate-float-slow">
           <BookCheck className="w-5 h-5 text-ink-600" />
         </div>
         <h3 className="text-sm font-serif font-semibold text-ink-900">
@@ -59,10 +59,11 @@ export const DocumentLibrary: FC<DocumentLibraryProps> = ({
 
       {/* Document List */}
       <ul className="space-y-2" aria-label="Indexed documents">
-        {documents.map((doc) => (
+        {documents.map((doc, index) => (
           <li
             key={doc.doc_id}
-            className="flex items-start justify-between gap-3 p-3 rounded-lg bg-white border border-paper-300 shadow-subtle hover:border-paper-400 transition-all"
+            className="flex items-start justify-between gap-3 p-3 rounded-lg bg-white/75 backdrop-blur-md border border-white/70 shadow-subtle hover:border-paper-400 hover:-translate-y-0.5 transition-all animate-rise"
+            style={{ animationDelay: `${index * 60}ms` }}
           >
             <div className="flex items-start gap-2.5 min-w-0">
               <div className="p-1.5 rounded bg-paper-100 text-scholar border border-paper-200 mt-0.5 flex-shrink-0">

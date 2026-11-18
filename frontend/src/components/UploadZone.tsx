@@ -120,8 +120,8 @@ export const UploadZone: FC<UploadZoneProps> = ({
         onClick={() => !disabled && !isProcessing && fileInputRef.current?.click()}
         className={`relative border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all ${
           isDragging
-            ? 'border-ink-900 bg-paper-200/80 scale-[0.99]'
-            : 'border-paper-300 hover:border-ink-600 bg-white hover:bg-paper-50/50'
+            ? 'border-ink-900 bg-white/80 backdrop-blur-md scale-[0.99] shadow-lg'
+            : 'border-paper-300 hover:border-ink-600 bg-white/70 backdrop-blur-md hover:bg-white/85 hover:shadow-card'
         } ${disabled || isProcessing ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}`}
         role="button"
         tabIndex={disabled || isProcessing ? -1 : 0}
@@ -144,7 +144,7 @@ export const UploadZone: FC<UploadZoneProps> = ({
         />
 
         <div className="flex flex-col items-center justify-center space-y-2">
-          <div className="p-2.5 rounded-full bg-paper-100 text-ink-700 border border-paper-200">
+          <div className="p-2.5 rounded-full bg-paper-100 text-ink-700 border border-paper-200 animate-float">
             <UploadCloud className="w-5 h-5 text-ink-700" />
           </div>
           <div>
@@ -178,7 +178,7 @@ export const UploadZone: FC<UploadZoneProps> = ({
 
       {/* Selected Files Queue (before processing) */}
       {selectedFiles.length > 0 && (
-        <div className="space-y-2 bg-white p-3 rounded-lg border border-paper-300 shadow-subtle">
+        <div className="space-y-2 bg-white/75 backdrop-blur-md p-3 rounded-lg border border-white/70 shadow-subtle animate-rise">
           <div className="flex items-center justify-between text-xs text-ink-600 font-medium pb-1 border-b border-paper-200">
             <span>Staged files ({selectedFiles.length})</span>
             <span>
@@ -191,7 +191,8 @@ export const UploadZone: FC<UploadZoneProps> = ({
             {selectedFiles.map((file, idx) => (
               <li
                 key={`${file.name}-${idx}`}
-                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md bg-paper-100 text-xs text-ink-800 border border-paper-200"
+                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md bg-paper-100 text-xs text-ink-800 border border-paper-200 animate-rise"
+                style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <FileText className="w-3.5 h-3.5 text-ink-500 flex-shrink-0" />
@@ -247,6 +248,11 @@ export const UploadZone: FC<UploadZoneProps> = ({
                 <span>Process {selectedFiles.length} {selectedFiles.length === 1 ? 'document' : 'documents'}</span>
               )}
             </button>
+            {isProcessing && (
+              <div className="mt-2 h-1 rounded-full bg-paper-200 overflow-hidden" aria-hidden="true">
+                <div className="h-full w-2/5 rounded-full bg-gradient-to-r from-scholar/40 via-scholar to-scholar/40 animate-shimmer" />
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -70,13 +70,13 @@ export const TokenSettingsModal: FC<TokenSettingsModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-950/40 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-labelledby="token-modal-title"
     >
       <div
-        className="w-full max-w-lg bg-paper-50 rounded-xl border border-[#dedad0] shadow-modal overflow-hidden transition-all"
+        className="w-full max-w-lg glass-strong rounded-xl overflow-hidden transition-all animate-pop"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
