@@ -8,6 +8,10 @@ services:
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      # Pin Python: Render's default is 3.14, which has no faiss-cpu wheels
+      # and broke other builds. The backend is built and tested on 3.12.
+      - key: PYTHON_VERSION
+        value: 3.12.0
       # Update with your Vercel frontend URL once deployed, comma-separated with localhost
       - key: CORS_ORIGINS
         value: http://localhost:5173,http://localhost:3000,https://YOUR-APP.vercel.app
