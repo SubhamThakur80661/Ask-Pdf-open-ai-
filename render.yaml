@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: opcit-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Update with your Vercel frontend URL once deployed, comma-separated with localhost
+      - key: CORS_ORIGINS
+        value: http://localhost:5173,http://localhost:3000,https://YOUR-APP.vercel.app
+      # Hugging Face token is set manually in the Render dashboard and never committed
+      - key: HUGGINGFACEHUB_API_TOKEN
+        sync: false
