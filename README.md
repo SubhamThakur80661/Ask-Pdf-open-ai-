@@ -35,7 +35,7 @@ Backend processes requests:
 
 ## Live Demo
 Current Streamlit app: https://ymcrqleh7utgmxcff3txpg.streamlit.app/
-TODO: Vercel frontend URL for the new React app
+New React app: https://opcit.vercel.app
 
 ## Local Setup
 

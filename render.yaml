@@ -14,7 +14,7 @@ services:
         value: 3.12.0
       # Update with your Vercel frontend URL once deployed, comma-separated with localhost
       - key: CORS_ORIGINS
-        value: http://localhost:5173,http://localhost:3000,https://YOUR-APP.vercel.app
+        value: http://localhost:5173,http://localhost:3000,https://opcit.vercel.app
       # Hugging Face token is set manually in the Render dashboard and never committed
       - key: HUGGINGFACEHUB_API_TOKEN
         sync: false
