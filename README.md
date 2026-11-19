@@ -7,7 +7,7 @@ OpCit is a professional full-stack web application that allows users to chat wit
 - Upload multiple PDF documents (up to 10 files, 25 MB each)
 - Ask natural language questions about the content of your PDFs
 - Get answers with precise citations (document name, page number, verbatim excerpt)
-- Supports a fallback chain of Hugging Face models for robust responses
+- Supports a fallback chain of Hugging Face models for reliable responses
 - User-provided Hugging Face API token, never stored server-side
 - Clean, accessible, and responsive user interface
 - Chat history persists within the browser session
@@ -34,8 +34,7 @@ Backend processes requests:
 6. Returns answer and citations to Frontend.
 
 ## Live Demo
-Current Streamlit app: https://ymcrqleh7utgmxcff3txpg.streamlit.app/
-New React app: https://opcit.vercel.app
+Live app: https://opcit.vercel.app
 
 ## Local Setup
 
